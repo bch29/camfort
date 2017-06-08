@@ -1,7 +1,7 @@
 module Camfort.Specification.Units.UnitExpr where
 
 import Data.Set (Set)
-import qualified Data.Set as S
+import qualified Data.Set as S (empty, singleton, toAscList, union)
 
 
 
@@ -13,8 +13,8 @@ data Expr = Var UniqueID
           | Product Expr Expr
           | Inverse Expr
   deriving (Eq, Ord, Show)
-  -- NB: '==' is syntactic equality! Use 'normalForm' when comparing for
-  --     semantic equality.
+  -- NB: '==' is merely syntactic equality! Use on 'Expr's in 'normalForm' to
+  -- compare for semantic equality.
 
 
 
