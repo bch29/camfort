@@ -63,6 +63,7 @@ executable camfort
                         Camfort.Reprint
                         Main
 
+                        Camfort.Specification.Units.Solver
                         Camfort.Specification.Units.UnitExpr
                         Camfort.Specification.Units.UnitExprTests
 
