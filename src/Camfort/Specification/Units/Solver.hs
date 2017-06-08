@@ -3,8 +3,10 @@
 
 module Camfort.Specification.Units.Solver where
 
+import Prelude hiding (not, or, and)
 import Data.SBV.Bridge.Z3
 import Data.Data
+import Data.Generics
 
 type T = SReal
 
@@ -57,11 +59,13 @@ data Units = M | S
 data UnitsExpr = Mult Units Units
      deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
 
-mul, add :: SUnits -> SUnits -> SUnits
-mul u v = uninterpret "MUL"
-add u v = uninterpret "ADD"
+mul :: SUnits -> SUnits -> SUnits
+mul = uninterpret "MUL"
 
-recip' u = uninterpret "RECIP"
+add :: SUnits -> SUnits -> SUnits
+add = uninterpret "ADD"
+
+recip' = uninterpret "RECIP"
 
 example2 =  do
   satResult <- sat predicate
@@ -75,6 +79,7 @@ example2 =  do
   return (satResult, thmResult)
   where
     predicate = do
+      -- addAxiom "m" ["(declare-fun MUL (Units Units) Units)"]
       addAxiom "*comm" [ "(assert (forall ((u Units) (v Units))"
                         , "  (= (MUL u v)"
                         , "     (MUL v u))))" ]
@@ -91,3 +96,78 @@ example2 =  do
       let sig1 = uv .== (ux `mul` (recip' ut)) &&& ux .== m &&& ut .== s
 
       return $ sig1
+
+
+-----------------------------------------------------------------------------
+-- * Representing uninterpreted booleans
+-----------------------------------------------------------------------------
+
+-- | The uninterpreted sort 'B', corresponding to the carrier.
+-- To prevent SBV from translating it to an enumerated type, we simply attach an unused field
+newtype B = B () deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind)
+
+-- | Handy shortcut for the type of symbolic values over 'B'
+type SB = SBV B
+
+-----------------------------------------------------------------------------
+-- * Uninterpreted connectives over 'B'
+-----------------------------------------------------------------------------
+
+-- | Uninterpreted logical connective 'and'
+and :: SB -> SB -> SB
+and = uninterpret "AND"
+
+-- | Uninterpreted logical connective 'or'
+or :: SB -> SB -> SB
+or  = uninterpret "OR"
+
+-- | Uninterpreted logical connective 'not'
+not :: SB -> SB
+not = uninterpret "NOT"
+
+-----------------------------------------------------------------------------
+-- * Axioms of the logical system
+-----------------------------------------------------------------------------
+
+-- | Distributivity of OR over AND, as an axiom in terms of
+-- the uninterpreted functions we have introduced. Note how
+-- variables range over the uninterpreted sort 'B'.
+ax1 :: [String]
+ax1 = [ "(assert (forall ((p B) (q B) (r B))"
+      , "   (= (AND (OR p q) (OR p r))"
+      , "      (OR p (AND q r)))))"
+      ]
+
+-- | One of De Morgan's laws, again as an axiom in terms
+-- of our uninterpeted logical connectives.
+ax2 :: [String]
+ax2 = [ "(assert (forall ((p B) (q B))"
+      , "   (= (NOT (OR p q))"
+      , "      (AND (NOT p) (NOT q)))))"
+      ]
+
+-- | Double negation axiom, similar to the above.
+ax3 :: [String]
+ax3 = ["(assert (forall ((p B)) (= (NOT (NOT p)) p)))"]
+
+-----------------------------------------------------------------------------
+-- * Demonstrated deduction
+-----------------------------------------------------------------------------
+
+-- | Proves the equivalence @NOT (p OR (q AND r)) == (NOT p AND NOT q) OR (NOT p AND NOT r)@,
+-- following from the axioms we have specified above. We have:
+--
+-- >>> test
+-- Q.E.D.
+test :: IO ThmResult
+test = prove $ do addAxiom "*comm" [ "(assert (forall ((u B) (v B))"
+                        , "  (= (AND u v)"
+                        , "     (AND v u))))" ]
+                  addAxiom "OR distributes over AND" ax1
+                  addAxiom "de Morgan"               ax2
+                  addAxiom "double negation"         ax3
+                  p <- free "p"
+                  q <- free "q"
+                  r <- free "r"
+                  return $   not (p `or` (q `and` r))
+                         .== (not p `and` not q) `or` (not p `and` not r)
