@@ -1,4 +1,4 @@
-module UnitExpr where
+module Camfort.Specification.Units.UnitExpr where
 
 import Data.Set (Set)
 import qualified Data.Set as S

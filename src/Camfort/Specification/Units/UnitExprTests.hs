@@ -1,4 +1,10 @@
-module UnitExprTests where
+module Camfort.Specification.Units.UnitExprTests where
+
+
+
+-- | I am currently running tests in ghci with
+-- QC.quickCheckWith QC.stdArgs { QC.maxSuccess = 100000 }
+
 
 import Camfort.Specification.Units.UnitExpr
 
@@ -14,7 +20,7 @@ instance QC.Arbitrary Expr where
       n <- QC.choose (0,15) :: QC.Gen UniqueID
       QC.oneof [ return (Var n)
                , return Id
-               , liftM2 Mult QC.arbitrary QC.arbitrary
+               , liftM2 Product QC.arbitrary QC.arbitrary
                , liftM Inverse QC.arbitrary
                ]
 
@@ -32,12 +38,12 @@ prop_trans e1 e2 e3 = e1 == e2 && e2 == e3 ==> e1 == e3
 
 prop_cong1 e1 e2 = (e1 == e2) == (Inverse e1 == Inverse e2)
 
-prop_cong2 e1 e2 e3 e4 = e1 == e2 && e3 == e4 ==> Mult e1 e3 == Mult e2 e4
+prop_cong2 e1 e2 e3 e4 = e1 == e2 && e3 == e4 ==> Product e1 e3 == Product e2 e4
 
-prop_id e = normalForm e == normalForm (Mult e Id)
+prop_id e = normalForm e == normalForm (Product e Id)
 
-prop_assoc e1 e2 e3 = normalForm (Mult (Mult e1 e2) e3) == normalForm (Mult e1 (Mult e2 e3))
+prop_assoc e1 e2 e3 = normalForm (Product (Product e1 e2) e3) == normalForm (Product e1 (Product e2 e3))
 
-prop_comm e1 e2 = normalForm (Mult e1 e2) == normalForm (Mult e2 e1)
+prop_comm e1 e2 = normalForm (Product e1 e2) == normalForm (Product e2 e1)
 
-prop_inv e1 = normalForm (Mult (Inverse e1) e1) == Id
+prop_inv e = normalForm (Product (Inverse e) e) == Id
