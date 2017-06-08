@@ -3,7 +3,9 @@ module Camfort.Specification.Units.UnitExprTests where
 
 
 -- | I am currently running tests in ghci with
--- QC.quickCheckWith QC.stdArgs { QC.maxSuccess = 100000 }
+-- QC.quickCheckWith QC.stdArgs { QC.maxSuccess = 100000 } prop_xyz
+-- (Could probably do with less if more meaningful test cases were created.)
+
 
 
 import Camfort.Specification.Units.UnitExpr
@@ -47,3 +49,5 @@ prop_assoc e1 e2 e3 = normalForm (Product (Product e1 e2) e3) == normalForm (Pro
 prop_comm e1 e2 = normalForm (Product e1 e2) == normalForm (Product e2 e1)
 
 prop_inv e = normalForm (Product (Inverse e) e) == Id
+
+prop_idemp e = normalForm e == normalForm (normalForm e)
