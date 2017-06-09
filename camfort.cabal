@@ -66,6 +66,8 @@ executable camfort
                         Camfort.Specification.Units.Solver
                         Camfort.Specification.Units.UnitExpr
                         Camfort.Specification.Units.UnitExprTests
+                        Camfort.Specification.Units.UnitPow
+                        Camfort.Specification.Units.UnitPowTests
 
   build-depends:        base >= 4.6 && < 5,
                         ghc-prim >= 0.3.1.0,
