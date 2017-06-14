@@ -54,10 +54,7 @@ example = do
 type SUnits = SBV Units
 
 data Units = Units
-     deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
-
-data UnitsExpr = Mult Units Units
-     deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
+   deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
 
 mul :: SUnits -> SUnits -> SUnits
 mul = uninterpret "MUL"
@@ -65,22 +62,6 @@ mul = uninterpret "MUL"
 add :: SUnits -> SUnits -> SUnits
 add = uninterpret "ADD"
 
-recip' = uninterpret "RECIP"
-
-{-
-
-(declare-sort U)
-(declare-const m U)
-(declare-const s U)
-(declare-fun mult (U U) U)
-
-
-(assert (exists ((v U) (x U) (t U)) (and (and (= x m) (= t s))
-                                          (= v (mult x t)))))
-(check-sat)
-(get-model)
-
--}
 
 example2 =  do
   satResult <- sat predicate
@@ -88,8 +69,10 @@ example2 =  do
   case thmResult of
     ThmResult (Unknown _ model) -> putStrLn $ "Unknown: " ++ show model
     _ -> return ()
+  putStrLn $ show $ getModelUninterpretedValue "MUL" satResult
   case satResult of
-    SatResult (Unknown _ model) -> putStrLn $ "Unknown (SAT): " ++ show model
+    SatResult (Unknown _ model) -> do
+      putStrLn $ "Unknown (SAT): " ++ show model
     _ -> return ()
   return (satResult, thmResult)
   where
@@ -99,16 +82,14 @@ example2 =  do
                         , "  (= (MUL u v)"
                         , "     (MUL v u))))" ]
 
-      let m = uninterpret "m"
-      let s = uninterpret "s"
+      let m = literal $ Units
+      let s = literal $ Units
 
       (uv :: SUnits) <- exists "units(v)"
       (ux :: SUnits) <- exists "units(x)"
       (ut :: SUnits) <- exists "units(t)"
 
-      -- Constraint from the code
-      --let sig1 = uv .== (ux * (ut ^^ (-1))) &&& ux .== m &&& ut .== s
-      let sig1 = uv .== (ux `mul` (recip' ut)) &&& ux .== m &&& ut .== s
+      let sig1 = uv .== (ux `mul` ut) &&& ux .== m &&& ut .== s
 
       return $ sig1
 
