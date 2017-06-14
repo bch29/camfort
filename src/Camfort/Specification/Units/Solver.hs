@@ -53,8 +53,8 @@ example = do
 
 type SUnits = SBV Units
 
-data Units = M | S
-   deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
+data Units = Units
+     deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
 
 data UnitsExpr = Mult Units Units
      deriving (Eq, Ord, Show, Read, Data, SymWord, HasKind, SatModel)
@@ -66,6 +66,21 @@ add :: SUnits -> SUnits -> SUnits
 add = uninterpret "ADD"
 
 recip' = uninterpret "RECIP"
+
+{-
+
+(declare-sort U)
+(declare-const m U)
+(declare-const s U)
+(declare-fun mult (U U) U)
+
+
+(assert (exists ((v U) (x U) (t U)) (and (and (= x m) (= t s))
+                                          (= v (mult x t)))))
+(check-sat)
+(get-model)
+
+-}
 
 example2 =  do
   satResult <- sat predicate
@@ -84,8 +99,8 @@ example2 =  do
                         , "  (= (MUL u v)"
                         , "     (MUL v u))))" ]
 
-      let m = literal $ M
-      let s = literal $ S
+      let m = uninterpret "m"
+      let s = uninterpret "s"
 
       (uv :: SUnits) <- exists "units(v)"
       (ux :: SUnits) <- exists "units(x)"

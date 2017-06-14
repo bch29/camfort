@@ -7,10 +7,9 @@ import Data.List (nubBy, sort)
 
 
 
-data UnitAtom = UnitAtom
-  { uniqueId :: UniqueId
-  , power :: Power
-  }
+data UnitAtom = UnitAtom { uniqueId :: UniqueId
+                         , power :: Power
+                         }
   deriving (Eq, Ord, Show)
 
 type UniqueId = String -- Word -- Unsigned Int
