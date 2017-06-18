@@ -46,7 +46,7 @@ instance Show Unit where
                   1 -> ""
                   n -> superscript n
 
-
+superscript :: Rational -> String
 superscript n = map sup nstring
   where
     nstring | denominator n == 1 = show $ numerator n
