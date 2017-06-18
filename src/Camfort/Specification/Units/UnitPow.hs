@@ -71,7 +71,7 @@ eg1 :: Unit
 eg1 = Unit [UnitAtom "m" 1, UnitAtom "s" (-1)]
 eg2 = Unit [UnitAtom "s" (-1), UnitAtom "m" 1]
 
-unit x = Unit [UnitAtom x 1]
+unit u p = Unit [UnitAtom u p]
 
 
 
