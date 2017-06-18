@@ -47,21 +47,25 @@ instance Show Unit where
                   n -> superscript n
 
 
--- FIXME: make total
-superscript n
-  | n < 0 = "⁻" ++ superscript (negate n)
-  | otherwise = case n of
-                  0 -> "⁰"
-                  1 -> "¹"
-                  2 -> "²"
-                  3 -> "³"
-                  4 -> "⁴"
-                  5 -> "⁵"
-                  6 -> "⁶"
-                  7 -> "⁷"
-                  8 -> "⁸"
-                  9 -> "⁹"
-                  _ -> show $ fromRational n
+superscript n = map sup nstring
+  where
+    nstring | denominator n == 1 = show $ numerator n
+            | otherwise = show $ fromRational n
+    sup x = case x of
+              '.' -> '˙'
+              '-' -> '⁻'
+              '0' -> '⁰'
+              '1' -> '¹'
+              '2' -> '²'
+              '3' -> '³'
+              '4' -> '⁴'
+              '5' -> '⁵'
+              '6' -> '⁶'
+              '7' -> '⁷'
+              '8' -> '⁸'
+              '9' -> '⁹'
+              x' -> x'
+
 
 eg1 :: Unit
 eg1 = Unit [UnitAtom "m" 1, UnitAtom "s" (-1)]
