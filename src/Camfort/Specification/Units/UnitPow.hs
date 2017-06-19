@@ -38,8 +38,10 @@ instance Num Unit where
   signum (Unit []) = 0 -- ?
   signum u = 1 -- ?
 
+
 instance Fractional Unit where
   recip = inverse
+
 
 instance Show Unit where
   show (Unit []) = ""
@@ -48,25 +50,26 @@ instance Show Unit where
                   1 -> ""
                   n -> superscript n
 
+
+
 superscript :: Rational -> String
 superscript n = map sup nstring
-  where
-    nstring | denominator n == 1 = show $ numerator n
-            | otherwise = show $ fromRational n
-    sup x = case x of
-              '.' -> '˙'
-              '-' -> '⁻'
-              '0' -> '⁰'
-              '1' -> '¹'
-              '2' -> '²'
-              '3' -> '³'
-              '4' -> '⁴'
-              '5' -> '⁵'
-              '6' -> '⁶'
-              '7' -> '⁷'
-              '8' -> '⁸'
-              '9' -> '⁹'
-              x' -> x'
+  where nstring | denominator n == 1 = show $ numerator n -- to avoid e.g. "2.0"
+                | otherwise = show $ fromRational n
+        sup x = case x of
+                  '.' -> '˙'
+                  '-' -> '⁻'
+                  '0' -> '⁰'
+                  '1' -> '¹'
+                  '2' -> '²'
+                  '3' -> '³'
+                  '4' -> '⁴'
+                  '5' -> '⁵'
+                  '6' -> '⁶'
+                  '7' -> '⁷'
+                  '8' -> '⁸'
+                  '9' -> '⁹'
+                  x' -> x'
 
 
 eg1 :: Unit
