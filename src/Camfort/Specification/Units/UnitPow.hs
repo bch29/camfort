@@ -25,7 +25,9 @@ newtype Unit = Unit [UnitAtom] -- TODO: Consider using Seq instead
   deriving (Ord)
 
 instance Eq Unit where
-  u1 == u2 = show (normalForm u1) == show (normalForm u2)
+  u1 == u2 = and $ zipWith (==) (norm u1) (norm u2)
+    where norm = unwrap . normalForm
+          unwrap (Unit as) = as
 
 instance Num Unit where
   u + _ = u
