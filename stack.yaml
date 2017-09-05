@@ -1,0 +1,25 @@
+flags: {}
+extra-package-dbs: []
+packages:
+- .
+- location:
+    git: https://github.com/camfort/fortran-src
+    commit: e5c89fae54c4e2449e70a4f20e9672c10b226a59
+  extra-dep: true
+- location:
+    git: https://github.com/bch29/language-verification
+    commit: 795337561a357affad4fe8994352b4214bb8eb46
+  extra-dep: true
+- location:
+    git: https://github.com/LeventErkok/sbv
+    commit: 9eb986ea7acead3d3496b31c833357f9a7705fec
+  extra-dep: true
+extra-deps:
+- partial-order-0.1.2.1
+- vinyl-0.6.0
+- union-0.1.1.2
+- GenericPretty-1.2.1
+- crackNum-1.9
+- syz-0.2.0.0
+- FloatingHex-0.4
+resolver: lts-9.2
